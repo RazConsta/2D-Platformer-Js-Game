@@ -1,35 +1,45 @@
 // This game shell was happily modified from Googler Seth Ladd's "Bad Aliens" game and his Google IO talk in 2011
 
 class GameEngine {
-    constructor(options) {
-        // What you will use to draw
-        // Documentation: https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D
+    constructor() {
+        this.entities = [];
         this.ctx = null;
 
-        // Everything that will be updated and drawn each frame
-        this.entities = [];
+       // Directional movement
+       this.W = false;
+       this.A = false;
+       this.S = false;
+       this.D = false;
+       
+       // Sprint
+       this.shift = false;
+       // Attack
+       this.lclick = false;
+       // Block 
+       this.rclick = false;
 
-        // Information on the input
-        this.click = null;
-        this.mouse = null;
-        this.wheel = null;
-        this.keys = {};
+       // Special
+       // this.F = false;
+       // Throwable
+       // this.G = false;
 
         // THE KILL SWITCH
         this.running = false;
 
         // Options and the Details
-        this.options = options || {
+        /* this.options = options || {
             prevent: {
                 contextMenu: true,
                 scrolling: true,
             },
             debugging: false,
-        };
+        }; */
     };
 
     init(ctx) {
         this.ctx = ctx;
+        // this.surfaceWidth = this.ctx.canvas.width;
+        // this.surfaceHeight = this.ctx.canvas.height;
         this.startInput();
         this.timer = new Timer();
     };
@@ -46,48 +56,97 @@ class GameEngine {
     };
 
     startInput() {
-        const getXandY = e => ({
-            x: e.clientX - this.ctx.canvas.getBoundingClientRect().left,
-            y: e.clientY - this.ctx.canvas.getBoundingClientRect().top
-        });
+        var that = this;
 
-        this.ctx.canvas.addEventListener("mousemove", e => {
-            if (this.options.debugging) {
-                console.log("MOUSE_MOVE", getXandY(e));
-            }
-            this.mouse = getXandY(e);
-        });
+        var getXandY = function (e) {
+            var x = e.clientX - that.ctx.canvas.getBoundingClientRect().left;
+            var y = e.clientY - that.ctx.canvas.getBoundingClientRect().top;
 
-        this.ctx.canvas.addEventListener("click", e => {
-            if (this.options.debugging) {
-                console.log("CLICK", getXandY(e));
-            }
+            return { x: x, y: y, radius: 0 };
+        }
+
+        this.ctx.canvas.addEventListener("mousemove", function (e) {
+            that.mouse = getXandY(e);
+        }, false);
+
+        this.ctx.canvas.addEventListener("mousedown", function (e) {
             this.click = getXandY(e);
-        });
-
-        this.ctx.canvas.addEventListener("wheel", e => {
-            if (this.options.debugging) {
-                console.log("WHEEL", getXandY(e), e.wheelDelta);
+            if (e.button == 0) {
+                console.log("Pressed left click")
+                that.lclick = true;
             }
-            if (this.options.prevent.scrolling) {
-                e.preventDefault(); // Prevent Scrolling
+        }, false);
+        
+        this.ctx.canvas.addEventListener("mouseup", function (e) {
+            this.click = getXandY(e);
+            if (e.button == 0) {
+                console.log("Pressed left click")
+                that.lclick = false;
             }
-            this.wheel = e;
-        });
+        }, false); 
 
         this.ctx.canvas.addEventListener("contextmenu", e => {
-            if (this.options.debugging) {
+            /* if (this.options.debugging) {
                 console.log("RIGHT_CLICK", getXandY(e));
-            }
-            if (this.options.prevent.contextMenu) {
+            } */
+            // if (this.options.prevent.contextMenu) {
                 e.preventDefault(); // Prevent Context Menu
-            }
-            this.rightclick = getXandY(e);
-        });
+            // }
+            that.rightclick = getXandY(e);
+            that.rclick = true;
+            console.log("Pressed right click");
+        }); 
 
-        window.addEventListener("keydown", event => this.keys[event.key] = true);
-        window.addEventListener("keyup", event => this.keys[event.key] = false);
+        this.ctx.canvas.addEventListener("keydown", function (e) {
+            switch (e.code) {
+                case "KeyW":
+                case "Space":
+                    that.W = true;
+                    break;
+                case "KeyA":
+                    that.A = true;
+                    break;
+                case "KeyS":
+                case "KeyC":
+                case "ControlLeft":
+                    that.S = true;
+                    break;
+                case "KeyD":
+                    that.D = true;
+                    break;
+                case "ShiftLeft":
+                    that.shift = true;
+                    break; 
+            }
+        }, false);
+
+        this.ctx.canvas.addEventListener("keyup", function (e) {
+            switch (e.code) {
+                case "KeyW":
+                case "Space":
+                    that.W = false;
+                    break;
+                case "KeyA":
+                    that.A = false;
+                    break;
+                case "KeyS":
+                case "KeyC":
+                case "ControlLeft":
+                    that.S = false;
+                    break;
+                case "KeyD":
+                    that.D = false;
+                    break;
+                case "ShiftLeft":
+                    that.shift = false;
+                    break; 
+            }
+        }, false);
     };
+
+    isIdle() {
+        return this.W == false && this.A == false && this.S == false && this.D == false && this.shift == false && this.lclick == false && this.rclick == false;
+    }
 
     addEntity(entity) {
         this.entities.push(entity);
@@ -96,7 +155,6 @@ class GameEngine {
     draw() {
         // Clear the whole canvas with transparent color (rgba(0, 0, 0, 0))
         this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
-        ctx.drawImage(ASSET_MANAGER.getAsset("./acre.jpg"), 0, 0);
 
         // Draw latest things first
         for (let i = this.entities.length - 1; i >= 0; i--) {
