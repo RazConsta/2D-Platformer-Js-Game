@@ -9,22 +9,22 @@ class SceneManager {
 
         this.gameOver = false;
 
-        // this.title = true;
-        // this.level = null;
+        this.title = true;
+        this.credits = false;
+        this.level = null;
 
         // this.coinAnimation = new Animator(ASSET_MANAGER.getAsset("./sprites/coins.png"), 0, 160, 8, 8, 4, 0.2, 0, false, true);
 
         // this.minimap = new Minimap(this.game, 1.5 * PARAMS.BLOCKWIDTH, 3.5 * PARAMS.BLOCKWIDTH, 224 * PARAMS.SCALE);
 
-        this.altair = new Altair(this.game);
+        this.altair = new Altair(this.game, 10, 530);
 
-        this.game.addEntity(this.altair);
-	    //gameEngine.addEntity(new Prince(gameEngine));
-
-        this.loadLevel(levelOne, 2.5 * PARAMS.BLOCKWIDTH, 13 * PARAMS.BLOCKWIDTH, false, false);
+        // this.loadLevel(levelOne, PARAMS.BLOCKWIDTH, 13 * PARAMS.BLOCKWIDTH, false, true);
+        this.loadLevel(levelOne, true);
 
         // NOTE: PLEASE USE THE FOLLOWING LINE TO TEST.
         // this.loadLevel(levelTwo, 2.5 * PARAMS.BLOCKWIDTH, 13 * PARAMS.BLOCKWIDTH, false, true);
+        console.log("sceneManager: constructed")
     };
 
     clearEntities() {
@@ -33,7 +33,8 @@ class SceneManager {
         });
     };
 
-    loadLevel(level, x, y, transition, title) {
+    // Chris also has x, y and transition
+    loadLevel(level, title) {
         this.title = title;
         this.level = level;
         this.clearEntities();
@@ -45,34 +46,38 @@ class SceneManager {
             this.game.addEntity(new TransitionScreen(this.game, level, x, y, title));
         } else { 
         */
+
+            if (level.background) {
+                this.game.addEntity(new Background(this.game, level.background));
+            }
+
             if (level.stones) {
                 for (var i = 0; i < level.stones.length; i++) {
                     let stone = level.stones[i];
-                    this.game.addEntity(new Stone(this.game, stone.x * PARAMS.BLOCKWIDTH, stone.y * PARAMS.BLOCKWIDTH));
+                    this.game.addEntity(new Stone(this.game, stone.x, stone.y));
                 }
            // }
 
            
-            this.altair.x = x;
-            this.altair.y = y;
+            // this.altair.x = x;
+            // this.altair.y = y;
+
             this.altair.removeFromWorld = false;
             this.altair.velocity = { x: 0, y: 0 }; 
             
-            
-            /*
             if (level.music && !this.title) {
                 ASSET_MANAGER.pauseBackgroundMusic();
                 ASSET_MANAGER.playAsset(level.music);
             }
-            */
-
-            
+        
+            /*
             var that = this;
             var altair = false;
             this.game.entities.forEach(function(entity) {
                 if(that.altair === entity) altair = true;
             });
-            if(!altair) this.game.addEntity(this.altair);
+            if(!altair) this.game.addEntity(this.altair); 
+            */
             
         }
 
@@ -86,9 +91,9 @@ class SceneManager {
         */
         // this.altair.x = x;
         // this.altair.y = y;
-        this.game.addEntity(this.altair);
-        
 
+        this.game.addEntity(this.altair);
+        console.log("sceneManager: loadLevel")
     };
 
     updateAudio() {
@@ -105,18 +110,27 @@ class SceneManager {
 
         this.updateAudio();
 
-        /* if (this.title && this.game.click) {
-            if (this.game.click && this.game.click.y > 9 * PARAMS.BLOCKWIDTH && this.game.click.y < 9.5 * PARAMS.BLOCKWIDTH) {
+        if (this.title && this.game.lclick) {
+            // Title Screen -> Start
+            if (!this.credits && this.game.mouse.x > 900 && this.game.mouse.x < 1100 && this.game.mouse.y > 230 && this.game.mouse.y < 260) {
                 this.title = false;
-                this.mario = new Mario(this.game, 2.5 * PARAMS.BLOCKWIDTH, 0 * PARAMS.BLOCKWIDTH);
-                this.loadLevel(levelOne, 2.5 * PARAMS.BLOCKWIDTH, 0 * PARAMS.BLOCKWIDTH, true);
+                this.altair = new Altair(this.game, 10, 530);
+                this.loadLevel(levelOne, false);
             }
-            if (this.game.click && this.game.click.y > 10 * PARAMS.BLOCKWIDTH && this.game.click.y < 10.5 * PARAMS.BLOCKWIDTH) {
-                this.title = false;
-                this.mario = new Mario(this.game, 2.5 * PARAMS.BLOCKWIDTH, 0 * PARAMS.BLOCKWIDTH, true);
-                this.loadLevel(levelOne, 2.5 * PARAMS.BLOCKWIDTH, 0 * PARAMS.BLOCKWIDTH, true);
+            // Title Screen -> Credits
+            if (!this.credits && this.game.mouse.x > 900 && this.game.mouse.x < 1050 && this.game.mouse.y > 290 && this.game.mouse.y < 325) {
+                this.loadLevel(levelOne, true);
+                this.credits = true;
             }
-        } */
+            // Credits -> Title Screen
+            if (this.credits && this.game.mouse.x > 740 && this.game.mouse.x < 950 && this.game.mouse.y > 360 && this.game.mouse.y < 420) {
+                this.credits = false;
+                this.loadLevel(levelOne, true);
+            }
+        } 
+
+        // this.altair = new Altair(this.game, PARAMS.BLOCKWIDTH, 0);
+        // this.loadLevel(levelOne, PARAMS.BLOCKWIDTH, 0);
 
         /* if (this.gameOver) {
             this.gameOver = false;
@@ -153,29 +167,49 @@ class SceneManager {
     }; */
 
     draw(ctx) {
-
-        ctx.drawImage(ASSET_MANAGER.getAsset("./background/l1background.jpg"),0,0);
-        ctx.font = PARAMS.BLOCKWIDTH / 2 + 'px "Press Start 2P"';
+        ctx.font = '60px "Font"';
         ctx.fillStyle = "Blue";
+        ctx.strokeStyle = "Blue";
+        ctx.fillText("Assassin's Creed: Kingdoms", 440, 100);
+        ctx.strokeRect(1340, 50, 320, 270);
+        ctx.fillText(this.level.label, 1350, 100);
+        ctx.font = '30px "Font"';
+        ctx.fillText("WASD - MOVEMENT", 1350, 150);
+        ctx.fillText("SHIFT - SPRINT", 1350, 190);
+        ctx.fillText("L CLICK - ATTACK", 1350, 230);
+        ctx.fillText("R CLICK - BLOCK", 1350, 270);
+        ctx.fillText("F - SPECIAL", 1350, 310);
 
-        ctx.fillStyle = "Blue";
-        ctx.fillText("SWORD'S EDGE", 1.5 * PARAMS.BLOCKWIDTH, 1 * PARAMS.BLOCKWIDTH);
         // ctx.fillText((this.score + "").padStart(8,"0"), 1.5 * PARAMS.BLOCKWIDTH, 1.5 * PARAMS.BLOCKWIDTH);
         // ctx.fillText("x" + (this.coins < 10 ? "0" : "") + this.coins, 6.5 * PARAMS.BLOCKWIDTH, 1.5 * PARAMS.BLOCKWIDTH);
-        ctx.fillText("LEVEL ", 9 * PARAMS.BLOCKWIDTH, 1 * PARAMS.BLOCKWIDTH);
-        ctx.fillText(this.level.label, 9.5 * PARAMS.BLOCKWIDTH, 1.5 * PARAMS.BLOCKWIDTH);
         // ctx.fillText("TIME", 12.5 * PARAMS.BLOCKWIDTH, 1 * PARAMS.BLOCKWIDTH);
         // ctx.fillText("400", 13 * PARAMS.BLOCKWIDTH, 1.5 * PARAMS.BLOCKWIDTH);
 
-        /* if (this.title) {
-            var width = 176;
-            var height = 88;
-            ctx.drawImage(ASSET_MANAGER.getAsset("./sprites/title.png"), 2.5 * PARAMS.BLOCKWIDTH, 2 * PARAMS.BLOCKWIDTH, width * PARAMS.SCALE, height * PARAMS.SCALE);
-            ctx.fillStyle = this.game.mouse && this.game.mouse.y > 9 * PARAMS.BLOCKWIDTH && this.game.mouse.y < 9.5 * PARAMS.BLOCKWIDTH ? "Grey" : "White";
-            ctx.fillText("MARIO", 6.75 * PARAMS.BLOCKWIDTH, 9.5 * PARAMS.BLOCKWIDTH);
-            ctx.fillStyle = this.game.mouse && this.game.mouse.y > 10 * PARAMS.BLOCKWIDTH && this.game.mouse.y < 10.5 * PARAMS.BLOCKWIDTH ? "Grey" : "White";
-            ctx.fillText("LUIGI", 6.75 * PARAMS.BLOCKWIDTH, 10.5 * PARAMS.BLOCKWIDTH);
-        } */
+        if (this.title && !this.credits) {
+            // Chris uses the Blockwidth and Scale
+            ctx.drawImage(ASSET_MANAGER.getAsset("./background/title.jpg"), 0, 0);
+            ctx.fillStyle = "Blue";
+            ctx.fillText("\"NOTHING IS TRUE.", 900, 50);
+            ctx.fillText(" EVERYTHING IS PERMITTED.\"", 900, 100);
+            ctx.fillStyle = "Blue";
+            ctx.fillText(" - HASSAN-I SABBĀH 1034 - 1124", 920, 150);
+            ctx.fillStyle = "Black";
+            ctx.fillRect(890, 220, 220, 40);
+            ctx.fillStyle = this.game.mouse && this.game.mouse.x > 900 && this.game.mouse.x < 1100 && this.game.mouse.y > 230 && this.game.mouse.y < 260 ? "Blue" : "Red";
+            ctx.fillText("START GAME", 900, 250);
+            ctx.fillStyle = "Black";
+            ctx.fillRect(890, 290, 160, 40);
+            ctx.fillStyle = this.game.mouse && this.game.mouse.x > 900 && this.game.mouse.x < 1050 && this.game.mouse.y > 290 && this.game.mouse.y < 325 ? "Blue" : "Red";
+            ctx.fillText("CREDITS", 900, 320);
+        } else if (this.title && this.credits) {
+            ctx.drawImage(ASSET_MANAGER.getAsset("./background/credits.png"), 100, 114, 1672, 829, 0, 0, 1672, 829);
+            ctx.fillStyle = "Black";
+            ctx.fillRect(740, 370, 210, 40);
+            ctx.fillStyle = this.game.mouse && this.game.mouse.x > 740 && this.game.mouse.x < 950 && this.game.mouse.y > 360 && this.game.mouse.y < 420 ? "Blue" : "Red";
+            ctx.fillText("MAIN MENU", 750, 400);
+        }
+
+        
 
         // this.coinAnimation.drawFrame(this.game.clockTick, ctx, 6 * PARAMS.BLOCKWIDTH, 1 * PARAMS.BLOCKWIDTH, 3);
 

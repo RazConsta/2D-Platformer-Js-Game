@@ -2,7 +2,7 @@
 const PARAMS = {
     DEBUG: false,
     SCALE: 3,
-    BITWIDTH: 60
+    BITWIDTH: 57
 }
 
 /**

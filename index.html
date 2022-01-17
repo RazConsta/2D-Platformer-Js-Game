@@ -3,12 +3,13 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Sword's Edge</title>
+    <title>Assassin's Creed: Kingdoms</title>
     <link rel="icon" href="http://images4.fanpop.com/image/photos/23900000/Altair-assassins-creed-23937277-200-200.jpg">
-  
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Press+Start+2P">
     <style> 
         body {
-            font-size: 24px;
+            font-family: 'Font', serif;
+            font-size: 35px;
         }
         canvas {
             padding-left: 0;
@@ -16,19 +17,28 @@
             margin-left: auto;
             margin-right: auto;
             display: block;
+            font-size: 20px;
+        }
+        @font-face {
+            font-family: 'Font';
+            src: url("./font/Assassin$.ttf");
         }
     </style>
 
     <script type="text/javascript" src="./assetmanager.js"></script>
     <script type="text/javascript" src="./timer.js"></script>
     <script type="text/javascript" src="./gameengine.js"></script>
-    <script type="text/javascript" src="./util.js"></script>
     <script type="text/javascript" src="./animator.js"></script>
     <script type="text/javascript" src="./altair.js"></script>
     <script type="text/javascript" src="./prince.js"></script>
     <script type="text/javascript" src="./things.js"></script>
+    <!-- background.js -->
+    <script type="text/javascript" src="./background.js"></script>
     <script type="text/javascript" src="./levels.js"></script>
     <script type="text/javascript" src="./sceneManager.js"></script>
+    <!-- transition.js -->
+    <script type="text/javascript" src="./util.js"></script>
+    <!-- boundingbox.js --> 
     <script type="text/javascript" src="./main.js"></script>
 </head>
 <body>
@@ -36,7 +46,7 @@
     <canvas id="gameWorld" width="1672" height="829" style="background: rgb(255, 255, 255); border: 1px solid black" tabindex="0" autofocus></canvas> 
     <br>  
     <div align="right"> 
-        <input type="checkbox" id="debug"> Debug <input type="checkbox" id="mute"> Mute <input type="range" id="volume" min="0" max="1" value="0.1" step="0.05"> Volume 
+        <input type="checkbox" id="debug"> Debug <input type="checkbox" id="mute"> Mute <input type="range" id="volume" min="0" max="1" value="1" step="0.05"> Volume
     </div>
 </body>
 </html>

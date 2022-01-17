@@ -13,6 +13,7 @@ class GameEngine {
        
        // Sprint
        this.shift = false;
+
        // Attack
        this.lclick = false;
        // Block 
@@ -70,20 +71,32 @@ class GameEngine {
         }, false);
 
         this.ctx.canvas.addEventListener("mousedown", function (e) {
-            this.click = getXandY(e);
+            this.lclick = getXandY(e);
             if (e.button == 0) {
-                console.log("Pressed left click")
+                that.lclick = true;
+                that.lclick_hold = true;
+                console.log("Mousedown left click: lclick is " + that.lclick);
+            }
+        }, false);
+
+        this.ctx.canvas.addEventListener("mouseup", function (e) {
+            this.lclick = getXandY(e);
+            if (e.button == 0) {
+                console.log("Mouseup left click")
+                that.lclick = false;
+                that.lclick_hold = false; 
+            } 
+        }, false);
+        
+        /*
+        // REVIEW FUNCTIONALITY
+        this.ctx.canvas.addEventListener("click", function (e) {
+            this.lclick = getXandY(e);
+            if (e.button == 0) {
                 that.lclick = true;
             }
         }, false);
-        
-        this.ctx.canvas.addEventListener("mouseup", function (e) {
-            this.click = getXandY(e);
-            if (e.button == 0) {
-                console.log("Pressed left click")
-                that.lclick = false;
-            }
-        }, false); 
+        */
 
         this.ctx.canvas.addEventListener("contextmenu", e => {
             /* if (this.options.debugging) {
@@ -125,7 +138,7 @@ class GameEngine {
                 case "KeyW":
                 case "Space":
                     that.W = false;
-                    break;
+                    break; 
                 case "KeyA":
                     that.A = false;
                     break;
@@ -156,10 +169,17 @@ class GameEngine {
         // Clear the whole canvas with transparent color (rgba(0, 0, 0, 0))
         this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
 
-        // Draw latest things first
+        // KV: Draw latest things first
+        /*
         for (let i = this.entities.length - 1; i >= 0; i--) {
             this.entities[i].draw(this.ctx, this);
         }
+        */
+        
+        for (let i = 0; i <= this.entities.length - 1; i++) {
+            this.entities[i].draw(this.ctx); // KV made this take this in too
+        }
+        this.camera.draw(this.ctx);
     };
 
     update() {
@@ -172,6 +192,7 @@ class GameEngine {
                 entity.update();
             }
         }
+        this.camera.update();
 
         for (let i = this.entities.length - 1; i >= 0; --i) {
             if (this.entities[i].removeFromWorld) {
@@ -184,6 +205,7 @@ class GameEngine {
         this.clockTick = this.timer.tick();
         this.update();
         this.draw();
+
     };
 
 };
