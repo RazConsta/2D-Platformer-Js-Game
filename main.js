@@ -9,6 +9,11 @@ ASSET_MANAGER.queueDownload("./background/l5background.jpg");
 ASSET_MANAGER.queueDownload("./background/title.jpg");
 ASSET_MANAGER.queueDownload("./background/credits.png");
 
+// health bar icons
+ASSET_MANAGER.queueDownload("./health_bar_icons/max_health.png");
+ASSET_MANAGER.queueDownload("./health_bar_icons/medium_health.png");
+ASSET_MANAGER.queueDownload("./health_bar_icons/low_health.png");
+
 // sprites
 ASSET_MANAGER.queueDownload("./sprites/stone.png");
 ASSET_MANAGER.queueDownload("./sprites/altair_sprites.png");
@@ -21,7 +26,7 @@ ASSET_MANAGER.queueDownload("./music/07masyaf.mp3");
 ASSET_MANAGER.downloadAll(() => {
 	const gameEngine = new GameEngine();
 
-	ASSET_MANAGER.autoRepeat("./music/07masyaf.mp3");
+	// ASSET_MANAGER.autoRepeat("./music/07masyaf.mp3");
 
 	const canvas = document.getElementById("gameWorld");
 	const ctx = canvas.getContext("2d");

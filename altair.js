@@ -8,16 +8,20 @@ class Altair {
         this.spritesheet = ASSET_MANAGER.getAsset("./sprites/altair_sprites.png");
         this.lspritesheet = ASSET_MANAGER.getAsset("./sprites/altair_sprites_left.png");
 
-        // this.x = 0;
-        // this.y = 527;
-
         // altair's state variables
         this.facing = "right"; 
         this.state = "idle"; 
         this.dead = false;
+
         // Does not trigger attack after clicking start game.
         this.game.lclick = false;
         this.animationTrigger = false;
+
+        // health related
+        this.maxhp = 100 * this.game.camera.levelCount;
+        this.maxbars = 5 * this.game.camera.levelCount;
+        this.hp = 80;
+        this.healthbar = new HealthBar(this);
 
         this.velocity = { x: 0, y: 0 };
         this.fallAcc = 562.5;
@@ -67,7 +71,6 @@ class Altair {
     }
 
     update () {
-
         const TICK = this.game.clockTick;
         const WALK = 100;
         const RUN = 250;
@@ -124,9 +127,6 @@ class Altair {
 
         // update position
         this.x += this.velocity.x * TICK;
-        // if character changes direction we will need to account for the flipped animation origin change
-        if (this.initial_facing == "right" && this.facing =="left") this.x += 70;  
-        if (this.initial_facing == "left" && this.facing == "right") this.x -= 70;
         this.y += this.velocity.y * TICK;
 
        
@@ -143,12 +143,9 @@ class Altair {
             && !this.game.W && !this.game.A && !this.game.S && !this.game.D 
             && !this.game.shift) {
             this.state = "attack";
-            // if the animation is done
-            if (this.animations[this.facing + " attack"].isDone()) {
-                // set state to idle once attack animation is finished
+            if (this.animations[this.facing + " attack"].isDone()) { // if the animation is done
+                this.state = "idle"; // set state to idle once attack animation is finished
                 this.velocity.x = 0;
-                this.state = "idle";
-                // this.game.lclick = false;
                 this.animationTrigger = false;
                 this.animations[this.facing + " attack"].elapsedTime = 0;
             }
@@ -157,13 +154,9 @@ class Altair {
             }
         } else {
             // reset the attack animation
-            // this.game.lclick = true;
             this.velocity.x = 0;
-            // if (!this.animations[this.facing + " attack"].isDone()) this.game.lclick = true;
             this.animations[this.facing + " attack"].elapsedTime = 0;
         }
-
-        
 
         // - Attack physics -------------------------------------------
 
@@ -184,14 +177,23 @@ class Altair {
             else this.state = 0;
         } */
 
-        if (this.x < 0 || this.x > 1672) this.x = 0;
+        // if (this.facing == "right" && this.x > 1672) this.x = 0; // hitting the right end of the level
+        if (this.facing == "left" && this.x < 50) this.x = 50; // replace when putting up a wall at the start of level
     };
+
+    isAlmostDone(tick) {
+        return this.animations[this.facing + " " + this.state].elapsedTime + tick >= this.animations[this.facing + " " + this.state].totalTime;
+    }
 
     drawMinimap () {
 
     }
 
     draw(ctx) {
-        this.animations[this.facing + " " + this.state].drawFrame(this.game.clockTick, ctx, this.x, this.y);
+        this.healthbar.draw(ctx);
+        // let x = this.x; // if character changes direction we will need to account for the flipped animation origin change
+        if (this.initial_facing == "right" && this.facing =="left") this.x += 70;  
+        if (this.initial_facing == "left" && this.facing == "right") this.x -= 70;
+        this.animations[this.facing + " " + this.state].drawFrame(this.game.clockTick, ctx, this.x - this.game.camera.x, this.y);
     };
 };

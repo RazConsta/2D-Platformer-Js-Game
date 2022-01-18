@@ -17,6 +17,6 @@ class Stone {
             // ctx.drawImage(this.spritesheet,0,0, 60,60, this.x + i * PARAMS.BLOCKWIDTH, this.y, PARAMS.BLOCKWIDTH, PARAMS.BLOCKWIDTH);
             // ctx.drawImage(this.spritesheet, 0,0,60,60, this.x + i * PARAMS.BLOCKWIDTH - this.game.camera.x, this.y + PARAMS.BLOCKWIDTH, PARAMS.BLOCKWIDTH, PARAMS.BLOCKWIDTH);
         // }
-        ctx.drawImage(this.spritesheet, this.x, this.y);
+        ctx.drawImage(this.spritesheet, this.x - this.game.camera.x, this.y);
     }
 }

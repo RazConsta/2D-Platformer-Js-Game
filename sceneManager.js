@@ -24,7 +24,7 @@ class SceneManager {
 
         // NOTE: PLEASE USE THE FOLLOWING LINE TO TEST.
         // this.loadLevel(levelTwo, 2.5 * PARAMS.BLOCKWIDTH, 13 * PARAMS.BLOCKWIDTH, false, true);
-        console.log("sceneManager: constructed")
+        console.log("sceneManager: constructed");
     };
 
     clearEntities() {
@@ -36,7 +36,8 @@ class SceneManager {
     // Chris also has x, y and transition
     loadLevel(level, title) {
         this.title = title;
-        this.level = level;
+        this.levelCount = level.count;
+        this.levelLabel = level.label;
         this.clearEntities();
         this.x = 0;
         // this.underground = level.underground;
@@ -146,9 +147,8 @@ class SceneManager {
             this.game.addEntity(new TransitionScreen(this.game, levelOne, x, y, true));
         } */
 
-        let midpoint = PARAMS.CANVAS_WIDTH/2 - PARAMS.BLOCKWIDTH / 2;
-
-        // if (this.x < this.mario.x - midpoint) this.x = this.mario.x - midpoint;
+        let midpoint = PARAMS.CANVAS_WIDTH / 2 - PARAMS.BLOCKWIDTH;
+        if (this.x < this.altair.x - midpoint) this.x = this.altair.x - midpoint; 
 
         // NOTE: THIS FOLLOWING CODE HAS A BUG WHERE CANVAS COLOR WON'T CHANGE BACK TO BLUE.
         /* var canvas = document.getElementById("gameWorld");
@@ -171,19 +171,15 @@ class SceneManager {
         ctx.fillStyle = "Blue";
         ctx.strokeStyle = "Blue";
         ctx.fillText("Assassin's Creed: Kingdoms", 440, 100);
-        ctx.strokeRect(1340, 50, 320, 270);
-        ctx.fillText(this.level.label, 1350, 100);
+        ctx.strokeRect(1340, 5, 325, 270);
+        ctx.fillText(this.levelLabel, 1350, 60);
+        ctx.strokeRect(1340, 70, 325, 0);
         ctx.font = '30px "Font"';
-        ctx.fillText("WASD - MOVEMENT", 1350, 150);
-        ctx.fillText("SHIFT - SPRINT", 1350, 190);
-        ctx.fillText("L CLICK - ATTACK", 1350, 230);
-        ctx.fillText("R CLICK - BLOCK", 1350, 270);
-        ctx.fillText("F - SPECIAL", 1350, 310);
-
-        // ctx.fillText((this.score + "").padStart(8,"0"), 1.5 * PARAMS.BLOCKWIDTH, 1.5 * PARAMS.BLOCKWIDTH);
-        // ctx.fillText("x" + (this.coins < 10 ? "0" : "") + this.coins, 6.5 * PARAMS.BLOCKWIDTH, 1.5 * PARAMS.BLOCKWIDTH);
-        // ctx.fillText("TIME", 12.5 * PARAMS.BLOCKWIDTH, 1 * PARAMS.BLOCKWIDTH);
-        // ctx.fillText("400", 13 * PARAMS.BLOCKWIDTH, 1.5 * PARAMS.BLOCKWIDTH);
+        ctx.fillText("WASD - MOVEMENT", 1350, 100);
+        ctx.fillText("SHIFT - SPRINT", 1350, 140);
+        ctx.fillText("L CLICK - ATTACK", 1350, 180);
+        ctx.fillText("R CLICK - BLOCK", 1350, 220);
+        ctx.fillText("F - SPECIAL", 1350, 260);
 
         if (this.title && !this.credits) {
             // Chris uses the Blockwidth and Scale
@@ -208,8 +204,6 @@ class SceneManager {
             ctx.fillStyle = this.game.mouse && this.game.mouse.x > 740 && this.game.mouse.x < 950 && this.game.mouse.y > 360 && this.game.mouse.y < 420 ? "Blue" : "Red";
             ctx.fillText("MAIN MENU", 750, 400);
         }
-
-        
 
         // this.coinAnimation.drawFrame(this.game.clockTick, ctx, 6 * PARAMS.BLOCKWIDTH, 1 * PARAMS.BLOCKWIDTH, 3);
 

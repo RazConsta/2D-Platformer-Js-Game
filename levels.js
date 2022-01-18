@@ -1,6 +1,7 @@
 // Code Base - Chris Marriott @ YouTube, GitHub. Music - SoldierJogos @ YouTube. Altair Sprite - Rasgar @ spriters-resource.com. 
 
 let levelOne = {
+    count: 1,
     background: "./background/l1background.jpg",
     music: "./music/07masyaf.mp3",
     label: "Level 1/5",
@@ -82,6 +83,7 @@ let levelOne = {
 } 
 
 let levelTwo = {
+    count: 2,
     background: "./background/l2background.jpg",
     music: "./music/07masyaf.mp3",
     label: "Level 2/5",
@@ -90,6 +92,7 @@ let levelTwo = {
 }
 
 let levelThree = {
+    count: 3,
     background: "./background/l3background.jpg",
     music: "./music/07masyaf.mp3",
     label: "Level 3/5",
@@ -98,6 +101,7 @@ let levelThree = {
 }
 
 let levelFour = {
+    count: 4,
     background: "./background/l4background.jpg",
     music: "./music/07masyaf.mp3",
     label: "Level 4/5",
@@ -106,6 +110,7 @@ let levelFour = {
 }
 
 let levelFive = {
+    count: 4,
     background: "./background/l5background.jpg",
     music: "./music/07masyaf.mp3",
     label: "Level 5/5",
