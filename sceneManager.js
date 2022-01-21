@@ -116,13 +116,13 @@ class SceneManager {
         // If title screen
         if (this.title && this.game.lclick) {
             // Title Screen -> Start Game (with transition)
-            if (!this.credits && this.game.mouse.x > 900 && this.game.mouse.x < 1100 && this.game.mouse.y > 230 && this.game.mouse.y < 260) {
+            if (!this.credits && this.game.mouse.x > 800 && this.game.mouse.x < 1020 && this.game.mouse.y > 170 && this.game.mouse.y < 210) {
                 this.title = false;
                 this.altair = new Altair(this.game, 10, 530);
                 this.loadLevel(levelOne, false, true);
             }
             // Title Screen -> Credits
-            if (!this.credits && this.game.mouse.x > 900 && this.game.mouse.x < 1050 && this.game.mouse.y > 290 && this.game.mouse.y < 325) {
+            if (!this.credits && this.game.mouse.x > 800 && this.game.mouse.x < 960 && this.game.mouse.y > 220 && this.game.mouse.y < 260) {
                 this.loadLevel(levelOne, true, false);
                 this.credits = true;
             }
@@ -250,13 +250,13 @@ class SceneManager {
             ctx.fillStyle = "Blue";
             ctx.fillText(" - HASSAN-I SABBĀH 1034 - 1124", 820, 150);
             ctx.fillStyle = "Black";
-            ctx.fillRect(890, 220, 220, 40);
-            ctx.fillStyle = this.game.mouse && this.game.mouse.x > 900 && this.game.mouse.x < 1100 && this.game.mouse.y > 230 && this.game.mouse.y < 260 ? "Red" : "White";
-            ctx.fillText("START GAME", 900, 250);
+            ctx.fillRect(800, 170, 220, 40); // left 90 up 50
+            ctx.fillStyle = this.game.mouse && this.game.mouse.x > 800 && this.game.mouse.x < 1020 && this.game.mouse.y > 170 && this.game.mouse.y < 210 ? "Red" : "White";
+            ctx.fillText("START GAME", 810, 200);
             ctx.fillStyle = "Black";
-            ctx.fillRect(890, 290, 160, 40);
-            ctx.fillStyle = this.game.mouse && this.game.mouse.x > 900 && this.game.mouse.x < 1050 && this.game.mouse.y > 290 && this.game.mouse.y < 325 ? "Red" : "White";
-            ctx.fillText("CREDITS", 900, 320);
+            ctx.fillRect(800, 220, 160, 40);
+            ctx.fillStyle = this.game.mouse && this.game.mouse.x > 800 && this.game.mouse.x < 960 && this.game.mouse.y > 220 && this.game.mouse.y < 260 ? "Red" : "White";
+            ctx.fillText("CREDITS", 810, 250);
         } else if (this.title && this.credits && !this.transition) {
             ctx.drawImage(ASSET_MANAGER.getAsset("./background/credits.png"), 100, 114, 1672, 829, 0, 0, 1672, 829);
             ctx.fillStyle = "Black";
