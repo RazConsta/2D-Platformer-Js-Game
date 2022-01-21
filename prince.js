@@ -1,7 +1,8 @@
 class Prince {
     constructor(game) {
         this.game = game;
-        this.spritesheet = ASSET_MANAGER.getAsset("./prince_sprites.png");
+        this.spritesheet = ASSET_MANAGER.getAsset("./sprites/prince_sprites.png");
+        this.name = "Prince";
 
         this.x = 0;
         this.y = 1200;

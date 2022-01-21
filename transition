@@ -1,0 +1,13 @@
+class TransitionScreen {
+    constructor(game, level, x, y, gameOver) {
+        Object.assign(this, { game, level, x, y, gameOver });
+
+        this.elapsed = 0;
+    };
+
+    update() {
+        this.elapsed += this.game.clockTick;
+
+        if (this.elapsed > 10) this.game.camera.loadLevel(this.level, this.x, this.y, false, this.gameOver);
+    };
+}

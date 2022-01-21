@@ -24,6 +24,13 @@ class GameEngine {
        // Throwable
        // this.G = false;
 
+       // Level Select
+       this.digitOne = false;
+       this.digitTwo = false;
+       this.digitThree = false;
+       this.digitFour = false;
+       this.digitFive = false;
+
         // THE KILL SWITCH
         this.running = false;
 
@@ -75,14 +82,12 @@ class GameEngine {
             if (e.button == 0) {
                 that.lclick = true;
                 that.lclick_hold = true;
-                console.log("Mousedown left click: lclick is " + that.lclick);
             }
         }, false);
 
         this.ctx.canvas.addEventListener("mouseup", function (e) {
             this.lclick = getXandY(e);
             if (e.button == 0) {
-                console.log("Mouseup left click")
                 that.lclick = false;
                 that.lclick_hold = false; 
             } 
@@ -130,6 +135,21 @@ class GameEngine {
                 case "ShiftLeft":
                     that.shift = true;
                     break; 
+                case "Digit1":
+                    that.digitOne = true;
+                    break;
+                case "Digit2":
+                    that.digitTwo = true;
+                    break;
+                case "Digit3":
+                    that.digitThree = true;
+                    break; 
+                case "Digit4":
+                    that.digitFour = true;
+                    break;
+                case "Digit5":
+                    that.digitFive = true;
+                    break;
             }
         }, false);
 
@@ -153,11 +173,27 @@ class GameEngine {
                 case "ShiftLeft":
                     that.shift = false;
                     break; 
+                    case "Digit1":
+                    that.digitOne = false;
+                    break;
+                case "Digit2":
+                    that.digitTwo = false;
+                    break;
+                case "Digit3":
+                    that.digitThree = false;
+                    break; 
+                case "Digit4":
+                    that.digitFour = false;
+                    break;
+                case "Digit5":
+                    that.digitFive = false;
+                    break;
             }
         }, false);
     };
 
     isIdle() {
+        // not pressing WASD, Shift, Left Click And Right Click
         return this.W == false && this.A == false && this.S == false && this.D == false && this.shift == false && this.lclick == false && this.rclick == false;
     }
 

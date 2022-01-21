@@ -3,14 +3,15 @@ class Altair {
         Object.assign(this, {game, x, y});
         this.game.altair = this;
         this.game = game;
+        this.name = "Altair";
 
         // spritesheets
         this.spritesheet = ASSET_MANAGER.getAsset("./sprites/altair_sprites.png");
         this.lspritesheet = ASSET_MANAGER.getAsset("./sprites/altair_sprites_left.png");
 
         // altair's state variables
-        this.facing = "right"; 
-        this.state = "idle"; 
+        this.facing = "right"; // can be left or right
+        this.state = "idle"; // can be idle, jump, walk, run, attack
         this.dead = false;
 
         // Does not trigger attack after clicking start game.
@@ -20,13 +21,18 @@ class Altair {
         // health related
         this.maxhp = 100 * this.game.camera.levelCount;
         this.maxbars = 5 * this.game.camera.levelCount;
-        this.hp = 80;
+        this.hp = 0.75 * this.maxhp;
         this.healthbar = new HealthBar(this);
 
         this.velocity = { x: 0, y: 0 };
-        this.fallAcc = 562.5;
+        // this.fallAcc = 562.5;
 
-        // this.updateBB();
+        this.multiplier = 1;
+        if (this.game.camera.levelCount == 2 || this.game.camera.levelLabel == "Level 5/5") {
+            this.multiplier = 2; // Altair is 2 times taller in level 2 and 5. Used for adjusting the collision offset and
+        } 
+
+        this.updateBB();
 
         // altair's animations
         this.animations = [];
@@ -35,17 +41,19 @@ class Altair {
 
     loadAnimations() { 
         this.animations["right idle"] = new Animator(this.spritesheet, -999, 1, -999, 66, 6, 0.2, false, true, false, [3, 31, 42, 70, 81, 109, 120, 148, 159, 187, 198, 226]);
+        this.animations["right jump"] = new Animator(this.spritesheet, -999, 283, -999, 57, 5, 0.1, false, true, false, [1, 39, 45, 84, 92, 125, 134, 172, 178, 217]);
         this.animations["right walk"] = new Animator(this.spritesheet, -999, 70, -999, 68, 8, 0.2, false, true, false, [582, 605, 611, 643, 648, 677, 682, 705, 711, 734, 742, 778, 785, 815, 819, 842]); 
         this.animations["right run"] = new Animator(this.spritesheet, -999, 74, -999, 68, 8, 0.1, false, true, false, [1, 36, 45, 77, 84, 129, 132, 172, 177, 212, 220, 254, 260, 301, 308, 351]);
         this.animations["right attack"] = new Animator(this.spritesheet, -999, 429, -999, 69, 5, 0.1, false, false, false, [17, 62, 66, 107, 114, 184, 191, 258, 265, 308]); 
-        this.animations["right 360"] = new Animator(this.spritesheet, -999, 498, -999, 60, 7, 0.14, false, false, false, [4, 35, 38, 81, 84, 156, 157, 218, 222, 281, 284, 355, 356, 400]); 
         this.animations["right dead"];
 
         this.animations["left idle"] = new Animator(this.spritesheet, -999, 1, -999, 66, 6, 0.2, false, true, true, [3, 31, 42, 70, 81, 109, 120, 148, 159, 187, 198, 226]);
+        this.animations["left jump"] = new Animator(this.spritesheet, -999, 283, -999, 57, 5, 0.1, false, true, true, [1, 39, 45, 84, 92, 125, 134, 172, 178, 217]);
         this.animations["left walk"] = new Animator(this.spritesheet, -999, 70, -999, 68, 8, 0.2, false, true, true, [582, 605, 611, 643, 648, 677, 682, 705, 711, 734, 742, 778, 785, 815, 819, 842]); 
         this.animations["left run"] = new Animator(this.spritesheet, -999, 74, -999, 68, 8, 0.1, false, true, true, [1, 36, 45, 77, 84, 129, 132, 172, 177, 212, 220, 254, 260, 301, 308, 351]);
         this.animations["left attack"] = new Animator(this.spritesheet, -999, 429, -999, 69, 5, 0.1, false, false, true, [17, 62, 66, 107, 114, 184, 191, 258, 265, 308]); 
 
+        // this.animations["right 360"] = new Animator(this.spritesheet, -999, 498, -999, 60, 7, 0.14, false, false, false, [4, 35, 38, 81, 84, 156, 157, 218, 222, 281, 284, 355, 356, 400]); 
         /*this.animations["left idle"] = new Animator(this.lspritesheet, -999, 1, -999, 66, 6, 0.2, true, true, true, [623, 651, 662, 690, 701, 729, 740, 768, 779, 807, 818, 846]);
         this.animations["left walk"] = new Animator(this.lspritesheet, -999, 70, -999, 68, 8, 0.2, true, true, true, [7, 30, 34, 64, 71, 105, 115, 137, 144, 167, 172, 201, 206, 238, 244, 267]);
         this.animations["left run"] = new Animator(this.lspritesheet, -999, 74, -999, 68, 8, 0.1, true, true, true, [498, 541, 548, 589, 595, 629, 636, 672, 677, 717, 720, 765, 772, 804, 813, 848]);
@@ -54,15 +62,33 @@ class Altair {
         this.animations["left dead"];
     }
 
-    /* updateBB() {
+    updateBB() {
         this.lastBB = this.BB;
-        if (this.size === 0 || this.size === 3) {
-            this.BB = new BoundingBox(this.x, this.y, PARAMS.BLOCKWIDTH, PARAMS.BLOCKWIDTH);
+
+        let sign;
+        if (this.facing == "right") {
+            sign = 0;
+        } else {
+            sign = -1;
         }
-        else {
-            this.BB = new BoundingBox(this.x, this.y, PARAMS.BLOCKWIDTH, PARAMS.BLOCKWIDTH * 2);
+
+        if (this.state == "attack") {
+            this.BB = new BoundingBox(this.x + sign * 205, this.y, 205 * this.multiplier, 178 * this.multiplier);
         }
-    }; */
+        else if (this.state == "idle") {
+            this.BB = new BoundingBox(this.x + sign * 80, this.y, 80 * this.multiplier, 178 * this.multiplier);
+        }
+        else if (this.state == "walk") {3
+            this.BB = new BoundingBox(this.x + sign * 100, this.y, 100 * this.multiplier, 178 * this.multiplier);
+        }
+        else if (this.state == "run") {
+            this.BB = new BoundingBox(this.x + sign * 135, this.y, 135 * this.multiplier, 178 * this.multiplier);
+        } 
+        else if (this.state == "jump") {
+            this.BB = new BoundingBox(this.x + sign * 135, this.y, 135 * this.multiplier, 178 * this.multiplier);
+        }
+       
+    }
 
     die() {
         this.velocity.y = -640;
@@ -71,73 +97,79 @@ class Altair {
     }
 
     update () {
+        console.log("position: " + this.x + " " + this.y);
         const TICK = this.game.clockTick;
-        const WALK = 100;
-        const RUN = 250;
+        const WALK = 100 * this.multiplier;
+        const RUN = 250 * this.multiplier;
+        const FALL = 700 * this.multiplier;
 
         this.initial_facing = this.facing;
 
         // + Movement Physics -----------------------------------------------------------
-        if (this.game.A && !this.game.D) {
-            if (this.game.shift) {
-                // this.velocity.x -= RUN * TICK;
-                this.velocity.x = -RUN;
-                this.state = "run";
-            } else {
-                // this.velocity.x -= WALK * TICK;
-                this.velocity.x = -WALK;
-                this.state = "walk";
+        if (this.state != "jump") { // not jumping
+            if (this.game.A && !this.game.D && !this.game.W) { // GO LEFT
+                if (this.game.shift) { // RUN
+                    // this.velocity.x -= RUN * TICK;
+                    this.velocity.x = -RUN;
+                    this.state = "run";
+                } else { // WALK
+                    // this.velocity.x -= WALK * TICK;
+                    this.velocity.x = -WALK;
+                    this.state = "walk";
+                }
+                this.updateDirectionPosition(TICK);
             }
-        }
-        else if (this.game.D && !this.game.A) {
-            if (this.game.shift) {
-                // this.velocity.x += RUN * TICK;
-                this.velocity.x = RUN;
-                this.state = "run";
-            } else {
-                // this.velocity.x += WALK * TICK;
-                this.velocity.x = WALK;
-                this.state = "walk";
-            }
-        }
-        else if (this.game.isIdle()) {
-            this.velocity.x = 0;
-            this.state = "idle";
-        }
+            else if (this.game.D && !this.game.A && !this.game.W) { // GO RIGHT
+                    if (this.game.shift) { // RUN
+                        // this.velocity.x += RUN * TICK;
+                        this.velocity.x = RUN;
+                        this.state = "run";
+                    } else { // WALK
+                    // this.velocity.x += WALK * TICK;
+                    this.velocity.x = WALK;
+                    this.state = "walk";
+                    }
+                this.updateDirectionPosition(TICK);
+                } else if (this.state == "" && this.state != "attack" && this.game.isIdle()) { // not pressing any buttons
+                this.velocity.x = 0;
+                this.state = "idle";
+                this.updateDirectionPosition(TICK);
+                }
 
-        /*
-        else if (!this.game.A && !this.game.D) {
-            if (this.game.lclick && !this.game.rclick) {
-                this.state = "attack";
-            } else if (this.game.rclick && !this.game.lclick) {
-                this.state = "block";
-            }
-            this.velocity.x = 0;
-            this.state = "idle";
-            if (this.game.lclick && !this.game.rclick) {
-                this.state = "attack";
-            }
-        }
-        */
-       // - Movement Physics --------------------------------------------------------------
+            this.velocity.y += FALL * TICK;
 
-        // update direction
-        if (this.velocity.x > 0) this.facing = "right";
-        if (this.velocity.x < 0) this.facing = "left";
+            if (this.game.W && !this.game.S) { // JUMP
+                this.state = "jump";
+                this.velocity.y = -440;
 
-        // update position
-        this.x += this.velocity.x * TICK;
-        this.y += this.velocity.y * TICK;
+                if (this.game.A && !this.game.D) { // GO LEFT
+                    if (this.game.shift) { // RUN
+                        // this.velocity.x -= RUN * TICK;
+                        this.velocity.x = -RUN;
+                    } else { // WALK
+                        // this.velocity.x -= WALK * TICK;
+                        this.velocity.x = -WALK;
+                    }
+                    this.updateDirectionPosition(TICK);
+                }
+                else if (this.game.D && !this.game.A) { // GO RIGHT
+                        if (this.game.shift) { // RUN
+                            // this.velocity.x += RUN * TICK;
+                            this.velocity.x = RUN;
+                        } else { // WALK
+                        // this.velocity.x += WALK * TICK;
+                        this.velocity.x = WALK;
+                        }
+                    this.updateDirectionPosition(TICK);
+                    } else {
+                        this.updateDirectionPosition(TICK);
+                    }
 
-       
+                
+            } 
 
-        // + Attack Physics -------------------------------------------
-        // if only pressing left click / attack
-
-        console.log("lclick is " + this.game.lclick);
-
-        // Prevents attack animation from resuming if moving during attack. i.e. moving interrupts attacking
-        if (this.velocity.x != 0) this.animationTrigger = false;
+            if (this.velocity.x != 0) this.animationTrigger = false;
+            this.updateDirectionPosition(TICK);
 
         if ((this.game.lclick || this.animationTrigger) && !this.game.rclick 
             && !this.game.W && !this.game.A && !this.game.S && !this.game.D 
@@ -151,38 +183,100 @@ class Altair {
             }
             else { // if the animation is not done 
                 this.animationTrigger = true;
+                // this.state = "attack";
             }
         } else {
             // reset the attack animation
             this.velocity.x = 0;
             this.animations[this.facing + " attack"].elapsedTime = 0;
         }
+        this.updateDirectionPosition(TICK);
+        } else {
+            // air physics 
 
-        // - Attack physics -------------------------------------------
+            if (this.game.D && !this.game.A) {
+                if (!this.game.shift) {
+                    this.velocity.x = WALK;
+                    this.state = "walk";
+                } else {
+                    this.velocity.x = RUN;
+                    this.facing = "run";
+                }
+                this.facing = "right";
+            } else if (this.game.A && !this.game.D) {
+                if (!this.game.shift) {
+                    this.velocity.x = -WALK;
+                    this.state = "walk";
+                } else {
+                    this.velocity.x = -RUN;
+                    this.state = "run";
+                }
+            }
+        }
+
+        this.velocity.y += FALL * TICK;
+
+        this.updateBB();
+
+        // + Attack Physics -------------------------------------------
+        // if only pressing left click / attack
+
+        // Prevents attack animation from resuming if moving during attack. i.e. moving interrupts attacking
+        
 
         // if Altair fell off the map he's dead
         // if (this.y > PARAMS.BLOCKWIDTH * 16) this.die();
 
-        
+        // COLLISIONS ------------------------------------------------------------------------------------------------------------------------------
+        var that = this;
+        this.game.entities.forEach(function (entity) {
+            if (entity.BB && that.BB.collide(entity.BB)) {
+                if (that.velocity.y > 0) { // falling
+                    if (entity instanceof Stone && that.lastBB.bottom <= entity.BB.top) {  // falling     
+                            that.y = entity.BB.top - 178 * that.multiplier;
+                            that.velocity.y = 0;
+                            if (that.state == "jump") that.state = "idle"; // set state to not jumping
+                            that.updateBB();
+                    }
+                    
+                }
+                if (that.velocity.y < 0) { // jumping
+                    if (entity instanceof Stone
+                        && (that.lastBB.top) >= entity.BB.bottom // was below last tick
+                        && that.BB.collide(entity.leftBB) && that.BB.collide(entity.rightBB)) { // collide with the center point of the brick
+                            that.velocity.y = 0;
+                        }
+                }
+            }
+        });
 
-        // this.updateBB();
 
-        // TO DO COLLISION
+        // - Attack physics -------------------------------------------
 
-        /* // update state
-        if (this.state !== 4) { // if not jumping or falling
-            if (this.game.crouch) this.state = 5; // if crouch
-            else if (Math.abs(this.velocity.x) > WALK) this.state = 2; // running
-            else if (Math.abs(this.velocity.x) >= WALK) this.state = 1; // walking
-            else this.state = 0;
-        } */
+        if (this.state != "jump") { // if not jumping or falling
+            if (Math.abs(this.velocity.x) == WALK) this.state = "walk"; 
+            else if (Math.abs(this.velocity.x) == RUN) this.state = "run"; 
+            else this.state = "idle";
+        } 
 
-        // if (this.facing == "right" && this.x > 1672) this.x = 0; // hitting the right end of the level
-        if (this.facing == "left" && this.x < 50) this.x = 50; // replace when putting up a wall at the start of level
+        if (this.facing == "left" && this.x < 50 * this.multiplier) this.x = 50 * this.multiplier; // hitting the left end of the level
+        if (this.facing == "right" && this.x > this.game.camera.levelLimit) this.x = this.game.camera.levelLimit - 3 * this.multiplier; // hitting the right end of the level
+
+        this.updateDirectionPosition(TICK);
     };
 
     isAlmostDone(tick) {
         return this.animations[this.facing + " " + this.state].elapsedTime + tick >= this.animations[this.facing + " " + this.state].totalTime;
+    }
+
+    updateDirectionPosition(TICK) {
+        // update direction
+        if (this.velocity.x > 0) this.facing = "right";
+        if (this.velocity.x < 0) this.facing = "left";
+
+        // update position
+        this.x += this.velocity.x * TICK;
+        this.y += this.velocity.y * TICK;
     }
 
     drawMinimap () {
@@ -192,8 +286,28 @@ class Altair {
     draw(ctx) {
         this.healthbar.draw(ctx);
         // let x = this.x; // if character changes direction we will need to account for the flipped animation origin change
-        if (this.initial_facing == "right" && this.facing =="left") this.x += 70;  
-        if (this.initial_facing == "left" && this.facing == "right") this.x -= 70;
+        if (this.initial_facing == "right" && this.facing =="left") {
+            this.x += 70; 
+            // this.game.camera.x += 70; 
+        }
+        if (this.initial_facing == "left" && this.facing == "right") {
+            this.x -= 70;  
+            // this.game.camera.x -= 70;
+        }
+        let temp = PARAMS.SCALE;
+        if (this.game.camera.levelCount == 2) {
+            PARAMS.SCALE = 6;
+        }
+        if (this.game.camera.levelLabel == "Level 5/5"){
+            PARAMS.SCALE = 6;
+        }
         this.animations[this.facing + " " + this.state].drawFrame(this.game.clockTick, ctx, this.x - this.game.camera.x, this.y);
+        
+        PARAMS.SCALE = temp;
+
+        if (PARAMS.DEBUG) {
+            ctx.strokeStyle = 'Red';
+            ctx.strokeRect(this.BB.x - this.game.camera.x, this.BB.y, this.BB.width, this.BB.height);
+        }
     };
 };

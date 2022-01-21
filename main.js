@@ -8,11 +8,13 @@ ASSET_MANAGER.queueDownload("./background/l4background.jpg");
 ASSET_MANAGER.queueDownload("./background/l5background.jpg");
 ASSET_MANAGER.queueDownload("./background/title.jpg");
 ASSET_MANAGER.queueDownload("./background/credits.png");
+ASSET_MANAGER.queueDownload("./background/transition.jpg");
 
 // health bar icons
 ASSET_MANAGER.queueDownload("./health_bar_icons/max_health.png");
 ASSET_MANAGER.queueDownload("./health_bar_icons/medium_health.png");
 ASSET_MANAGER.queueDownload("./health_bar_icons/low_health.png");
+ASSET_MANAGER.queueDownload("./health_bar_icons/prince_health.png");
 
 // sprites
 ASSET_MANAGER.queueDownload("./sprites/stone.png");
