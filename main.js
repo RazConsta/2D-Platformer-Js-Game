@@ -22,8 +22,24 @@ ASSET_MANAGER.queueDownload("./sprites/altair_sprites.png");
 ASSET_MANAGER.queueDownload("./sprites/altair_sprites_left.png");
 ASSET_MANAGER.queueDownload("./sprites/prince_sprites.png");
 
+// soldier sprites
+ASSET_MANAGER.queueDownload("./sprites/soldier.png");
+
+// arrow/bullet sprite 
+ASSET_MANAGER.queueDownload("./sprites/bullet.png");
+ASSET_MANAGER.queueDownload("./sprites/arrow.png");
+ASSET_MANAGER.queueDownload("./sprites/arrow2.png");
+
+// weapon icons
+ASSET_MANAGER.queueDownload("./sprites/wheel.png");
+ASSET_MANAGER.queueDownload("./sprites/sword.png");
+ASSET_MANAGER.queueDownload("./sprites/crossbow.png");
+
 // music
 ASSET_MANAGER.queueDownload("./music/07masyaf.mp3");
+
+// tiles
+ASSET_MANAGER.queueDownload("./tiles/towers.png");
 
 ASSET_MANAGER.downloadAll(() => {
 	const gameEngine = new GameEngine();

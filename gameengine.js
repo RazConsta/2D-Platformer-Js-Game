@@ -14,6 +14,8 @@ class GameEngine {
        // Sprint
        this.shift = false;
 
+       this.wheel = false;
+
        // Attack
        this.lclick = false;
        // Block 
@@ -79,9 +81,14 @@ class GameEngine {
 
         this.ctx.canvas.addEventListener("mousedown", function (e) {
             this.lclick = getXandY(e);
-            if (e.button == 0) {
+            if (e.button == 0) 
+            {
                 that.lclick = true;
                 that.lclick_hold = true;
+            } 
+            else if (e.button == 1)
+            {
+                that.wheel = true;
             }
         }, false);
 
@@ -92,6 +99,10 @@ class GameEngine {
                 that.lclick_hold = false; 
             } 
         }, false);
+
+        /* this.ctx.canvas.addEventListener("wheel", function (e) {
+            this.wheel = true;
+        }); */
         
         /*
         // REVIEW FUNCTIONALITY

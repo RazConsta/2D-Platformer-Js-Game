@@ -1,6 +1,8 @@
 class HealthBar {
     constructor(agent) {
         Object.assign(this, { agent });
+
+        this.agent = agent;
     };
 
     update () {
@@ -29,10 +31,13 @@ class HealthBar {
                 image = ASSET_MANAGER.getAsset("./health_bar_icons/prince_health.png");
             }
 
-            
+            let sword = ASSET_MANAGER.getAsset("./sprites/sword.png");
+            let crossbow = ASSET_MANAGER.getAsset("./sprites/crossbow.png");
+            let wheel = ASSET_MANAGER.getAsset("./sprites/wheel.png");
             
 
-            if (this.agent.name == "Altair") {
+            if (this.agent.name == "Altair") 
+            {
                 ctx.strokeRect(35, 35, 70, 70);
                 ctx.drawImage(image, 40, 40, 60, 60);
                 ctx.strokeRect(105, 35, 205, 70);
@@ -79,6 +84,36 @@ class HealthBar {
                         currentBar++;
                     }
                 }
+
+                ctx.drawImage(wheel, 3, 120, 40, 60);
+               if (this.agent.weapon == "sword") 
+               {
+                    ctx.drawImage(sword, 40, 120, 60, 60);
+               } 
+               else 
+               {
+                   ctx.fillStyle = "Black";
+                   ctx.drawImage(crossbow, 40, 120, 60, 60);
+                   ctx.fillText(this.agent.arrows, 100, 155);
+               }
+
+                
+            } else if (this.agent.name == "soldier") {
+                if (this.agent.hp > 0 && this.agent.hp < 100) {
+                    let ratio = this.agent.hp / 100;
+                    ctx.strokeStyle = "Black";
+                    ctx.lineWidth = 2;
+                    ctx.fillStyle = ratio < 0.2 ? "Red" : ratio < 0.6 ? "Yellow" : "Green";
+
+                    let offset;
+                    if (this.agent.facing == "right") {
+                        offset = 0;
+                    } else {
+                        offset = 120;
+                    }
+                    ctx.fillRect(this.agent.x + 10 - offset - this.agent.game.camera.x, this.agent.y - 20, 100 * ratio, 15);
+                    ctx.strokeRect(this.agent.x + 10 - offset - this.agent.game.camera.x, this.agent.y - 20, 100, 15);
+                } 
             }
 
             ctx.lineWidth = 5;

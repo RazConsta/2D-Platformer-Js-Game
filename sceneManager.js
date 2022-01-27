@@ -13,6 +13,9 @@ class SceneManager {
         this.credits = false;
         this.level = null;
 
+        this.soldiers = [];
+        this.archers = [];
+
         // this.coinAnimation = new Animator(ASSET_MANAGER.getAsset("./sprites/coins.png"), 0, 160, 8, 8, 4, 0.2, 0, false, true);
 
         // this.minimap = new Minimap(this.game, 1.5 * PARAMS.BLOCKWIDTH, 3.5 * PARAMS.BLOCKWIDTH, 224 * PARAMS.SCALE);
@@ -50,14 +53,34 @@ class SceneManager {
         // this.underground = level.underground;
         
         
-        if (!title) {
-            if (level.background) {
+        if (!title) 
+        {
+            if (level.background) 
+            {
                 this.game.addEntity(new Background(this.game, level.background));
             }
-            if (level.stones) {
-                for (var i = 0; i < level.stones.length; i++) {
+            if (level.soldiers)
+            {
+                for (var i = 0; i < level.soldiers.length; i++) 
+                {
+                    let soldier = level.soldiers[i];
+                    this.game.addEntity(new Soldier(this.game, soldier.x, soldier.y));
+                }
+            }
+            if (level.stones) 
+            {
+                for (var i = 0; i < level.stones.length; i++) 
+                {
                     let stone = level.stones[i];
                     this.game.addEntity(new Stone(this.game, stone.x, stone.y));
+                }
+            if (level.towers) 
+            {
+                for (var i = 0; i < level.towers.length; i++) 
+                {
+                    let tower = level.towers[i];
+                    this.game.addEntity(new Tower(this.game, tower.x, tower.y, tower.w, tower.h));
+                }
             }
         }
 
@@ -68,7 +91,7 @@ class SceneManager {
             this.altair.removeFromWorld = false;
             this.altair.velocity = { x: 0, y: 0 }; 
             
-            if (level.music && !this.title) {
+            if (level.music && !this.title && this.transition) {
                 ASSET_MANAGER.pauseBackgroundMusic();
                 ASSET_MANAGER.playAsset(level.music);
             }

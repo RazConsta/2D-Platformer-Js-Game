@@ -57,7 +57,18 @@ window.requestAnimFrame = (() => {
  * Returns distance from two points
  * @param {Number} p1, p2 Two objects with x and y coordinates
  * @returns Distance between the two points
- */
+ 
 const getDistance = (p1, p2) => {
     return sqrt(Math.pow(p2.x - p1.x, 2) + Math.pow(p2.y - p1.y, 2));
+}; 
+*/
+
+
+const getDistance = (x1, y1, x2, y2) => {
+    return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
+};
+
+// Added from Tower Defense demo
+function distance(A, B) {
+    return Math.sqrt((B.x - A.x) * (B.x - A.x) + (B.y - A.y)*(B.y - A.y));
 };
